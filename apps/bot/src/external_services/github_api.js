@@ -20,7 +20,7 @@ export function isPRUnvalid(pr) {
 export async function postComment(uri, content) {
   try {
     console.log('post comment to uri:', uri);
-    const headers = {
+    const headers = { 
       'User-Agent': 'request',
       Authorization: `token ${process.env.GITHUB_TOKEN}`,
     };

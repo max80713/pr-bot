@@ -1,21 +1,20 @@
+import { InteractionResponseType, InteractionType } from 'discord-interactions';
 import express from 'express';
 import * as path from 'path';
-import { InteractionResponseType, InteractionType } from 'discord-interactions';
-import {
-  setSchedule,
-  isTimeEarlierThanNow,
-  formatMessageAsBlockquote,
-} from './utils';
-import { isPRUnvalid, postComment } from './external_services/github_api';
-import { getResponseFromGPT } from './external_services/openai_api';
+import { TOO_MUCH_TOKEN } from './data/comments';
+import schedule_messages from './data/schedule_messages';
 import {
   VerifyDiscordRequest,
   sendMessage,
   sendTestMessage,
   setDailyMessage,
 } from './external_services/discord_api';
-import schedule_messages from './data/schedule_messages';
-import { TOO_MUCH_TOKEN } from './data/comments';
+import { isPRUnvalid, postComment } from './external_services/github_api';
+import { getResponseFromGPT } from './external_services/openai_api';
+import {
+  isTimeEarlierThanNow,
+  setSchedule
+} from './utils';
 
 const app = express();
 
@@ -29,39 +28,39 @@ app.post(
     res.status(202).send('Accepted');
     const githubEvent = req.headers['x-github-event'];
     if (githubEvent === 'push') {
-      try {
-        const data = req.body;
-        const commit = data.head_commit;
-        const message = commit.message;
-        sendTestMessage(
-          `✅ 有人完成作業囉\n ${formatMessageAsBlockquote(message)}`
-        );
-      } catch (e) {
-        console.log(e);
-        sendTestMessage('Bot is down!');
-      }
+      // try {
+      //   const data = req.body;
+      //   const commit = data.head_commit;
+      //   const message = commit.message;
+      //   sendTestMessage(
+      //     `✅ 有人完成作業囉\n ${formatMessageAsBlockquote(message)}`
+      //   );
+      // } catch (e) {
+      //   console.log(e);
+      //   sendTestMessage('Bot is down!');
+      // }
     }
     if (githubEvent === 'issue_comment') {
-      try {
-        const data = req.body;
-        const action = data.action;
-        const comment = data.comment;
-        const message = comment.body;
-        const username = comment.user.login;
-        const issue = data.issue;
-        const title = issue.title;
+      // try {
+      //   const data = req.body;
+      //   const action = data.action;
+      //   const comment = data.comment;
+      //   const message = comment.body;
+      //   const username = comment.user.login;
+      //   const issue = data.issue;
+      //   const title = issue.title;
 
-        console.log(`${username} this message: ${message}`);
+      //   console.log(`${username} this message: ${message}`);
 
-        if (action === 'created' && username !== 'ChouChouHu') {
-          sendTestMessage(
-            `💬 ${title} 有新的留言：\n${formatMessageAsBlockquote(message)}`
-          );
-        }
-      } catch (e) {
-        console.log(e);
-        sendTestMessage('Bot is down!');
-      }
+      //   if (action === 'created' && username !== 'ChouChouHu') {
+      //     sendTestMessage(
+      //       `💬 ${title} 有新的留言：\n${formatMessageAsBlockquote(message)}`
+      //     );
+      //   }
+      // } catch (e) {
+      //   console.log(e);
+      //   sendTestMessage('Bot is down!');
+      // }
     }
     if (githubEvent === 'pull_request') {
       const data = req.body;
@@ -71,9 +70,9 @@ app.post(
 
       try {
         if (action === 'opened') {
-          sendTestMessage(
-            `📪 **${pr.user.login}** 交作業囉：[${pr.title}](${pr.html_url})`
-          );
+          // sendTestMessage(
+          //   `📪 **${pr.user.login}** 交作業囉：[${pr.title}](${pr.html_url})`
+          // );
           if (unvalidMessage) {
             postComment(pr.issue_url + '/comments', unvalidMessage);
             return;
@@ -115,7 +114,7 @@ app.post(
         }
       } catch (e) {
         console.log(e);
-        sendTestMessage('Bot is down!');
+        // sendTestMessage('Bot is down!');
       }
     } else if (githubEvent === 'ping') {
       console.log('GitHub sent the ping event');
